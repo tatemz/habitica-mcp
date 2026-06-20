@@ -14,13 +14,13 @@ and schema-decodes Habitica API responses at the boundary.
 ## Install
 
 ```sh
-pnpm install
+pnpm add -g habitica-mcp@alpha
 ```
 
-Copy the example env file and fill in your Habitica credentials:
+For local development:
 
 ```sh
-cp .env.example .env
+pnpm install
 ```
 
 Required variables:
@@ -29,6 +29,12 @@ Required variables:
 - `HABITICA_API_TOKEN`
 - `HABITICA_CLIENT_ID`
 - `HABITICA_API_BASE_URL` defaults to `https://habitica.com/api/v3`
+
+For a local checkout, copy the example env file and fill in your Habitica credentials:
+
+```sh
+cp .env.example .env
+```
 
 ## Commands
 
@@ -104,3 +110,30 @@ After `pnpm build`, use the package binary:
   }
 }
 ```
+
+After installing from npm, use the binary:
+
+```json
+{
+  "mcpServers": {
+    "habitica": {
+      "command": "habitica-mcp"
+    }
+  }
+}
+```
+
+## Publishing
+
+This package is intentionally pre-1.0. Publish early builds with the manual
+`Publish` GitHub Actions workflow. It uses the repository `NPM_TOKEN` secret,
+runs `pnpm check`, and publishes with npm provenance on the `alpha` dist-tag.
+
+Equivalent local command:
+
+```sh
+pnpm check
+npm publish --tag alpha --provenance
+```
+
+`prepack` builds `dist/`; `publishConfig` marks the package public and enables npm provenance.

@@ -1,8 +1,23 @@
 {
   "name": "habitica-mcp",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "description": "Habitica Model Context Protocol server built with Effect v4 beta",
+  "keywords": [
+    "effect",
+    "habitica",
+    "mcp",
+    "model-context-protocol",
+    "typescript"
+  ],
+  "homepage": "https://github.com/tatemz/habitica-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/tatemz/habitica-mcp/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tatemz/habitica-mcp.git"
+  },
   "bin": {
     "habitica-mcp": "dist/main.js"
   },
@@ -13,6 +28,19 @@
   ],
   "type": "module",
   "sideEffects": [],
+  "main": "./dist/HabiticaMcp.js",
+  "types": "./dist/HabiticaMcp.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/HabiticaMcp.d.ts",
+      "default": "./dist/HabiticaMcp.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
     "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm e2e && pnpm mutation && pnpm lint:knip",
@@ -29,6 +57,7 @@
     "lint:quality-scope": "node scripts/lint-quality-scope.mjs",
     "lint:versions": "node scripts/lint-version-policy.mjs",
     "mutation": "stryker run",
+    "prepack": "pnpm build",
     "prepare": "lefthook install",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

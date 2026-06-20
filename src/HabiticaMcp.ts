@@ -33,7 +33,7 @@ const ServerLayer = HabiticaMcpPartsLayer.pipe(
   Layer.provide(
     McpServer.layerStdio({
       name: "Habitica MCP",
-      version: "0.0.0",
+      version: "0.0.1-alpha.0",
     }),
   ),
   Layer.provide(NodeStdio.layer),
