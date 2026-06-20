@@ -52,6 +52,9 @@ pnpm e2e          # run strict effect-bdd Gherkin tests
 pnpm mutation     # run Stryker with 100% mutation threshold
 ```
 
+`pnpm e2e` is a deterministic fake-gateway suite. It exercises the full MCP tool
+handler surface without live Habitica credentials or network calls.
+
 ## Deterministic Gate
 
 `pnpm check` runs build, typecheck, suppression policy, deterministic scope
