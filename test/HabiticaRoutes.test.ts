@@ -42,7 +42,10 @@ describe("taskListUrlParams", () => {
     expect(taskListUrlParams(undefined)).toBeUndefined();
   });
 
-  it("returns the task type query parameter", () => {
-    expect(taskListUrlParams("todo")).toEqual({ type: "todo" });
+  it("maps task type query parameters to Habitica API values", () => {
+    expect(taskListUrlParams("habit")).toEqual({ type: "habits" });
+    expect(taskListUrlParams("daily")).toEqual({ type: "dailys" });
+    expect(taskListUrlParams("todo")).toEqual({ type: "todos" });
+    expect(taskListUrlParams("reward")).toEqual({ type: "rewards" });
   });
 });

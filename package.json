@@ -1,6 +1,6 @@
 {
   "name": "habitica-mcp",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Habitica Model Context Protocol server built with Effect v4 beta",
   "keywords": [
     "effect",

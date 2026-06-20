@@ -1,5 +1,12 @@
 import type { Direction, TaskType } from "./HabiticaSchemas.js";
 
+const taskListTypeParam: Readonly<Record<TaskType, string>> = {
+  daily: "dailys",
+  habit: "habits",
+  reward: "rewards",
+  todo: "todos",
+};
+
 export const HabiticaRoutes = {
   buySpecialSpell: (key: string): string => `/user/buy-special-spell/${key}`,
   castSkill: (skillKey: string): string => `/user/class/cast/${skillKey}`,
@@ -27,4 +34,5 @@ export const HabiticaRoutes = {
 
 export const taskListUrlParams = (
   type: TaskType | undefined,
-): Readonly<Record<string, string>> | undefined => (type === undefined ? undefined : { type });
+): Readonly<Record<string, string>> | undefined =>
+  type === undefined ? undefined : { type: taskListTypeParam[type] };
