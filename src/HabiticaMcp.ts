@@ -1,7 +1,16 @@
 import { NodeRuntime, NodeStdio } from "@effect/platform-node";
 import { Effect, Layer, Logger, Schema } from "effect";
 import { McpServer, Tool, Toolkit } from "effect/unstable/ai";
+import { HabiticaConfig } from "./config/HabiticaConfig.js";
 import { greetingMessage } from "./Greeting.js";
+import { HabiticaHttpAdapter } from "./habitica/HabiticaHttpAdapter.js";
+import {
+  DailyPlanningPrompt,
+  HabitCheckInPrompt,
+  TaskReviewPrompt,
+} from "./prompts/HabiticaPrompts.js";
+import { CapabilitiesResource, TaskTemplateResource } from "./resources/HabiticaResources.js";
+import { HabiticaToolLayer, HabiticaToolkit } from "./tools/HabiticaTools.js";
 
 const GreetingTool = Tool.make("GreetingTool", {
   description: "Return a deterministic greeting for a Habitica MCP caller",
@@ -11,7 +20,7 @@ const GreetingTool = Tool.make("GreetingTool", {
   success: Schema.String,
 });
 
-const HabiticaToolkit = Toolkit.make(GreetingTool);
+const GreetingToolkit = Toolkit.make(GreetingTool);
 
 const ReadmeResource = McpServer.resource({
   uri: "file:///README.md",
@@ -33,17 +42,36 @@ const HelloPrompt = McpServer.prompt({
   content: ({ name }) => Effect.succeed(`Use GreetingTool to greet ${name}.`),
 });
 
-const ServerLayer = Layer.mergeAll(
-  ReadmeResource,
-  HelloPrompt,
-  McpServer.toolkit(HabiticaToolkit).pipe(
-    Layer.provideMerge(
-      HabiticaToolkit.toLayer({
-        GreetingTool: ({ name }) => Effect.succeed(greetingMessage(name)),
-      }),
+const GreetingToolkitLayer = McpServer.toolkit(GreetingToolkit).pipe(
+  Layer.provideMerge(
+    GreetingToolkit.toLayer({
+      GreetingTool: ({ name }) => Effect.succeed(greetingMessage(name)),
+    }),
+  ),
+);
+
+const HabiticaToolkitLayer = McpServer.toolkit(HabiticaToolkit).pipe(
+  Layer.provideMerge(
+    HabiticaToolLayer.pipe(
+      Layer.provide(HabiticaHttpAdapter.gatewayLayer),
+      Layer.provide(HabiticaConfig.layer),
     ),
   ),
-).pipe(
+);
+
+const HabiticaMcpPartsLayer = Layer.mergeAll(
+  ReadmeResource,
+  CapabilitiesResource,
+  TaskTemplateResource,
+  HelloPrompt,
+  DailyPlanningPrompt,
+  HabitCheckInPrompt,
+  TaskReviewPrompt,
+  GreetingToolkitLayer,
+  HabiticaToolkitLayer,
+);
+
+const ServerLayer = HabiticaMcpPartsLayer.pipe(
   Layer.provide(
     McpServer.layerStdio({
       name: "Habitica MCP",

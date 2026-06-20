@@ -1,0 +1,67 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "oxc", "import", "unicorn"],
+  "options": {
+    "typeAware": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "style": "off",
+    "restriction": "off",
+    "perf": "off"
+  },
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/coverage/**",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/reports/**",
+    "**/.stryker-tmp/**",
+    "oxlint-plugins/**"
+  ],
+  "jsPlugins": ["./oxlint-plugins/habitica-mcp/index.mjs"],
+  "rules": {
+    "complexity": ["error", { "max": 6 }],
+    "eqeqeq": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "typescript/consistent-type-exports": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-misused-spread": "off",
+    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/switch-exhaustiveness-check": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "habitica-mcp/effect-trypromise-requires-catch": "error",
+    "habitica-mcp/mcp-stdout-is-protocol": "error",
+    "habitica-mcp/mutating-tool-name-is-explicit": "error",
+    "habitica-mcp/no-fallible-module-scope-make": "error",
+    "habitica-mcp/no-generic-route-strings-in-tools": "error",
+    "habitica-mcp/no-lowercase-effect-order": "error",
+    "habitica-mcp/no-option-returning-filter-map": "error",
+    "habitica-mcp/no-raw-habitica-credentials": "error",
+    "habitica-mcp/no-unchecked-json-boundary": "error",
+    "habitica-mcp/no-untyped-tool-success": "error",
+    "habitica-mcp/tools-depend-on-gateway-port": "error"
+  },
+  "overrides": [
+    {
+      "files": ["test/**", "e2e/**", "scripts/**"],
+      "rules": {
+        "complexity": "off",
+        "typescript/no-explicit-any": "off",
+        "typescript/no-floating-promises": "off",
+        "typescript/no-misused-promises": "off",
+        "typescript/switch-exhaustiveness-check": "off"
+      }
+    }
+  ]
+}

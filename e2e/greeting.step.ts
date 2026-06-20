@@ -2,22 +2,26 @@ import { Bdd } from "effect-bdd";
 import { Effect, Schema } from "effect";
 import { greetingMessage } from "../src/Greeting.js";
 
-const name = Bdd.capture("name", Schema.String);
-const expected = Bdd.capture("expected", Schema.String);
+const nameCapture = Bdd.capture("name", Schema.String);
+const expectedCapture = Bdd.capture("expected", Schema.String);
 
 const givenGreetingToolAvailable = Bdd.given`the Habitica MCP greeting tool is available`(() =>
   Effect.succeed({ greeting: "" }),
 );
 
-const whenAskItToGreet = Bdd.when`I ask it to greet ${name}`(
-  ({ name }: { readonly name: string }) => Effect.succeed({ greeting: greetingMessage(name) }),
+const whenAskItToGreet = Bdd.when`I ask it to greet ${nameCapture}`(
+  ({ name: capturedName }: { readonly name: string }) =>
+    Effect.succeed({ greeting: greetingMessage(capturedName) }),
 );
 
-const thenGreetingIs = Bdd.then`the greeting is ${expected}`(
-  ({ expected }: { readonly expected: string }, state: { readonly greeting: string }) =>
-    state.greeting === expected
+const thenGreetingIs = Bdd.then`the greeting is ${expectedCapture}`(
+  (
+    { expected: expectedGreeting }: { readonly expected: string },
+    state: { readonly greeting: string },
+  ) =>
+    state.greeting === expectedGreeting
       ? Effect.succeed(state)
-      : Effect.fail(`expected "${expected}", got "${state.greeting}"` as const),
+      : Effect.fail(`expected "${expectedGreeting}", got "${state.greeting}"` as const),
 );
 
 const greetingCaller = Bdd.scenario("Greeting a Habitica MCP caller").pipe(

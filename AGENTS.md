@@ -29,6 +29,41 @@ plain synchronous logic in Effect just to look functional.
 
 MCP stdout is protocol-owned. Logs go to stderr only.
 
+### Effect v4 Beta
+
+- Use Effect v4 beta APIs only. Keep `effect` and every `@effect/*` package on
+  the same `4.0.0-beta.x` version.
+- Import schema from `effect` unless local docs prove a narrower import is
+  required.
+- Prefer `Effect.gen` or `pipe()` when sequencing is meaningful.
+- Keep pure synchronous calculations pure; do not wrap everything in
+  `Effect.succeed`.
+- Use Layers at runtime boundaries: MCP server, platform services, HTTP clients.
+- Do not call schema constructors at module scope for data that can fail
+  validation.
+- Avoid compatibility shims for pre-release code. Replace the old path.
+- If an Effect v3 habit conflicts with v4 docs, trust the v4 docs and leave a
+  focused test.
+
+### MCP Contracts
+
+MCP tools are an API. Treat schemas and response shapes as contracts.
+
+- Tool names are stable PascalCase nouns ending in `Tool` only when using Effect
+  `Tool.make`.
+- Every tool has a narrow schema, explicit success type, and deterministic
+  text/JSON output.
+- Do not print to stdout. Stdio MCP owns stdout; logs go to stderr.
+- Never expose Habitica credentials, auth headers, raw tokens, or full account
+  dumps.
+- Mutating Habitica operations must be explicit in tool names and descriptions.
+- Prefer read-only tools first. Add writes only with tests and clear failure
+  behavior.
+- Decode external API responses at the boundary before passing data to MCP
+  responses.
+- Do not catch-and-hide API failures. Return a useful typed failure or let Effect
+  report the defect.
+
 ## Boundaries
 
 - `src/main.ts` is the executable edge.

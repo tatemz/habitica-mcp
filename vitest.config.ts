@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       exclude: ["src/HabiticaMcp.ts", "src/main.ts"],
-      include: ["src/Greeting.ts"],
+      include: ["src/Greeting.ts", "src/habitica/HabiticaRoutes.ts"],
       thresholds: {
         branches: 100,
         functions: 100,

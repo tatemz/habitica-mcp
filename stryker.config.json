@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "coverageAnalysis": "perTest",
-  "mutate": ["src/Greeting.ts"],
+  "mutate": ["src/Greeting.ts", "src/habitica/HabiticaRoutes.ts"],
   "packageManager": "pnpm",
   "plugins": ["@stryker-mutator/vitest-runner"],
   "reporters": ["clear-text", "progress"],
