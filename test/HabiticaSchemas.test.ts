@@ -1,6 +1,7 @@
 import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 import {
+  HabiticaApiInventory,
   HabiticaApiUserProfile,
   habiticaProfileFromApiUser,
 } from "../src/habitica/HabiticaSchemas.js";
@@ -17,6 +18,28 @@ describe("habiticaProfileFromApiUser", () => {
       displayName: "Tatemz",
       id: "user-1",
       stats: { gp: 12, hp: 50, lvl: 7, mp: 20 },
+    });
+  });
+});
+
+describe("HabiticaApiInventory", () => {
+  it("decodes inventory from the Habitica /user items envelope", () => {
+    const apiInventory = Schema.decodeUnknownSync(HabiticaApiInventory)({
+      items: {
+        eggs: { Wolf: 1 },
+        food: { Meat: 2 },
+        hatchingPotions: { Base: 1 },
+        mounts: { "Wolf-Base": false },
+        pets: { "Wolf-Base": 5 },
+      },
+    });
+
+    expect(apiInventory.items).toMatchObject({
+      eggs: { Wolf: 1 },
+      food: { Meat: 2 },
+      hatchingPotions: { Base: 1 },
+      mounts: { "Wolf-Base": false },
+      pets: { "Wolf-Base": 5 },
     });
   });
 });

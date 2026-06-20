@@ -75,6 +75,12 @@ export class HabiticaInventory extends Schema.Class<HabiticaInventory>("Habitica
   pets: Schema.Record(Schema.String, Schema.Number),
 }) {}
 
+export class HabiticaApiInventory extends Schema.Class<HabiticaApiInventory>(
+  "HabiticaApiInventory",
+)({
+  items: HabiticaInventory,
+}) {}
+
 export class HabiticaShopItem extends Schema.Class<HabiticaShopItem>("HabiticaShopItem")({
   key: Schema.String,
   text: Schema.String,

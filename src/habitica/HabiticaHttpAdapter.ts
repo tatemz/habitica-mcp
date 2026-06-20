@@ -18,8 +18,8 @@ import { HabiticaGateway } from "./HabiticaGateway.js";
 import { HabiticaRoutes, taskListUrlParams } from "./HabiticaRoutes.js";
 import {
   HabiticaApiUserProfile,
+  HabiticaApiInventory,
   CreateTaskInput,
-  HabiticaInventory,
   HabiticaMutationResult,
   HabiticaNotification,
   HabiticaShopItem,
@@ -28,6 +28,7 @@ import {
   HabiticaTask,
   habiticaProfileFromApiUser,
   type Direction,
+  type HabiticaInventory,
   type HabiticaProfile,
   type TaskType,
   type UpdateChecklistItemInput,
@@ -103,6 +104,9 @@ const rewardInput = (input: CreateTaskInput): CreateTaskInput =>
 
 const decodeUserProfile = (value: unknown): Effect.Effect<HabiticaProfile, HabiticaDecodeError> =>
   decodeData(HabiticaApiUserProfile)(value).pipe(Effect.map(habiticaProfileFromApiUser));
+
+const decodeInventory = (value: unknown): Effect.Effect<HabiticaInventory, HabiticaDecodeError> =>
+  decodeData(HabiticaApiInventory)(value).pipe(Effect.map((body) => body.items));
 
 const transportLayer = Layer.effect(
   HabiticaTransport,
@@ -187,7 +191,10 @@ const gatewayLayer = Layer.effect(
       equipPet: ({ petKey }) => post(HabiticaRoutes.equipPet(petKey), {}, HabiticaMutationResult),
       feedPet: ({ foodKey, petKey }) =>
         post(HabiticaRoutes.feedPet(petKey, foodKey), {}, HabiticaMutationResult),
-      getInventory: get(HabiticaRoutes.inventory(), HabiticaInventory),
+      getInventory: transport.request(
+        { method: "GET", path: HabiticaRoutes.user(), urlParams: { userFields: "items" } },
+        decodeInventory,
+      ),
       getStats: getUserProfile.pipe(Effect.map((profile) => profile.stats)),
       getTask: ({ taskId }) => get(HabiticaRoutes.task(taskId), HabiticaTask),
       getUserProfile,
