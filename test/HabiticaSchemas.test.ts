@@ -1,6 +1,7 @@
 import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 import {
+  HabiticaApiContent,
   HabiticaApiInventory,
   HabiticaApiMarket,
   HabiticaApiNotifications,
@@ -71,5 +72,23 @@ describe("HabiticaApiMarket", () => {
     expect(market.categories[0]?.items).toEqual([
       { key: "BearCub", text: "Bear Cub Egg", value: 3 },
     ]);
+  });
+});
+
+describe("HabiticaApiContent", () => {
+  it("decodes skills grouped under content spells", () => {
+    const content = Schema.decodeUnknownSync(HabiticaApiContent)({
+      spells: {
+        warrior: {
+          smash: { key: "smash", mana: 10, text: "Brutal Smash" },
+        },
+      },
+    });
+
+    expect(content.spells.warrior?.smash).toEqual({
+      key: "smash",
+      mana: 10,
+      text: "Brutal Smash",
+    });
   });
 });

@@ -14,6 +14,7 @@ export const HabiticaRoutes = {
   checklistItem: (taskId: string, itemId: string): string => `/tasks/${taskId}/checklist/${itemId}`,
   checklistItemScore: (taskId: string, itemId: string): string =>
     `/tasks/${taskId}/checklist/${itemId}/score`,
+  content: (): string => "/content",
   equipMount: (mountKey: string): string => `/user/equip/mount/${mountKey}`,
   equipPet: (petKey: string): string => `/user/equip/pet/${petKey}`,
   feedPet: (petKey: string, foodKey: string): string => `/user/feed/${petKey}/${foodKey}`,

@@ -109,6 +109,10 @@ export class HabiticaSkill extends Schema.Class<HabiticaSkill>("HabiticaSkill")(
   text: Schema.String,
 }) {}
 
+export class HabiticaApiContent extends Schema.Class<HabiticaApiContent>("HabiticaApiContent")({
+  spells: Schema.Record(Schema.String, Schema.Record(Schema.String, HabiticaSkill)),
+}) {}
+
 export class HabiticaMutationResult extends Schema.Class<HabiticaMutationResult>(
   "HabiticaMutationResult",
 )({

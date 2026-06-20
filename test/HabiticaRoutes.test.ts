@@ -4,6 +4,7 @@ import { HabiticaRoutes, taskListUrlParams } from "../src/habitica/HabiticaRoute
 describe("HabiticaRoutes", () => {
   it("builds user and collection routes", () => {
     expect(HabiticaRoutes.user()).toBe("/user");
+    expect(HabiticaRoutes.content()).toBe("/content");
     expect(HabiticaRoutes.inventory()).toBe("/user/inventory");
     expect(HabiticaRoutes.tasksUser()).toBe("/tasks/user");
     expect(HabiticaRoutes.tags()).toBe("/tags");
