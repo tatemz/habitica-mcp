@@ -2,6 +2,7 @@ import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 import {
   HabiticaApiInventory,
+  HabiticaApiMarket,
   HabiticaApiNotifications,
   HabiticaApiUserProfile,
   habiticaProfileFromApiUser,
@@ -53,6 +54,22 @@ describe("HabiticaApiNotifications", () => {
 
     expect(apiNotifications.notifications).toEqual([
       { id: "notification-1", seen: false, type: "info" },
+    ]);
+  });
+});
+
+describe("HabiticaApiMarket", () => {
+  it("decodes shop items nested under market categories", () => {
+    const market = Schema.decodeUnknownSync(HabiticaApiMarket)({
+      categories: [
+        {
+          items: [{ key: "BearCub", text: "Bear Cub Egg", value: 3 }],
+        },
+      ],
+    });
+
+    expect(market.categories[0]?.items).toEqual([
+      { key: "BearCub", text: "Bear Cub Egg", value: 3 },
     ]);
   });
 });

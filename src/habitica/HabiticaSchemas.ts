@@ -93,6 +93,16 @@ export class HabiticaShopItem extends Schema.Class<HabiticaShopItem>("HabiticaSh
   value: Schema.Number,
 }) {}
 
+export class HabiticaApiMarketCategory extends Schema.Class<HabiticaApiMarketCategory>(
+  "HabiticaApiMarketCategory",
+)({
+  items: Schema.Array(HabiticaShopItem),
+}) {}
+
+export class HabiticaApiMarket extends Schema.Class<HabiticaApiMarket>("HabiticaApiMarket")({
+  categories: Schema.Array(HabiticaApiMarketCategory),
+}) {}
+
 export class HabiticaSkill extends Schema.Class<HabiticaSkill>("HabiticaSkill")({
   key: Schema.String,
   mana: Schema.Number,

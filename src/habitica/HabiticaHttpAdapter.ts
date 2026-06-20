@@ -20,9 +20,9 @@ import {
   HabiticaApiUserProfile,
   HabiticaApiInventory,
   HabiticaApiNotifications,
+  HabiticaApiMarket,
   CreateTaskInput,
   HabiticaMutationResult,
-  HabiticaShopItem,
   HabiticaSkill,
   HabiticaTag,
   HabiticaTask,
@@ -31,6 +31,7 @@ import {
   type HabiticaInventory,
   type HabiticaNotification,
   type HabiticaProfile,
+  type HabiticaShopItem,
   type TaskType,
   type UpdateChecklistItemInput,
   type UpdateTaskInput,
@@ -113,6 +114,13 @@ const decodeNotifications = (
   value: unknown,
 ): Effect.Effect<ReadonlyArray<HabiticaNotification>, HabiticaDecodeError> =>
   decodeData(HabiticaApiNotifications)(value).pipe(Effect.map((body) => body.notifications));
+
+const decodeShopItems = (
+  value: unknown,
+): Effect.Effect<ReadonlyArray<HabiticaShopItem>, HabiticaDecodeError> =>
+  decodeData(HabiticaApiMarket)(value).pipe(
+    Effect.map((market) => market.categories.flatMap((category) => category.items)),
+  );
 
 const transportLayer = Layer.effect(
   HabiticaTransport,
@@ -210,7 +218,10 @@ const gatewayLayer = Layer.effect(
         { method: "GET", path: HabiticaRoutes.user(), urlParams: { userFields: "notifications" } },
         decodeNotifications,
       ),
-      listShopItems: get(HabiticaRoutes.market(), Schema.Array(HabiticaShopItem)),
+      listShopItems: transport.request(
+        { method: "GET", path: HabiticaRoutes.market() },
+        decodeShopItems,
+      ),
       listSkills: get(HabiticaRoutes.skillList(), Schema.Array(HabiticaSkill)),
       listTags: get(HabiticaRoutes.tags(), Schema.Array(HabiticaTag)),
       listTasks: (input: { readonly type?: TaskType | undefined }) =>
