@@ -17,16 +17,18 @@ import {
 import { HabiticaGateway } from "./HabiticaGateway.js";
 import { HabiticaRoutes, taskListUrlParams } from "./HabiticaRoutes.js";
 import {
+  HabiticaApiUserProfile,
   CreateTaskInput,
   HabiticaInventory,
   HabiticaMutationResult,
   HabiticaNotification,
-  HabiticaProfile,
   HabiticaShopItem,
   HabiticaSkill,
   HabiticaTag,
   HabiticaTask,
+  habiticaProfileFromApiUser,
   type Direction,
+  type HabiticaProfile,
   type TaskType,
   type UpdateChecklistItemInput,
   type UpdateTaskInput,
@@ -99,6 +101,9 @@ const rewardInput = (input: CreateTaskInput): CreateTaskInput =>
     ? new CreateTaskInput({ text: input.text, type: "reward" })
     : new CreateTaskInput({ notes: input.notes, text: input.text, type: "reward" });
 
+const decodeUserProfile = (value: unknown): Effect.Effect<HabiticaProfile, HabiticaDecodeError> =>
+  decodeData(HabiticaApiUserProfile)(value).pipe(Effect.map(habiticaProfileFromApiUser));
+
 const transportLayer = Layer.effect(
   HabiticaTransport,
   Effect.gen(function* () {
@@ -156,6 +161,10 @@ const gatewayLayer = Layer.effect(
       transport.request({ body, method: "PUT", path }, decodeData(schema));
     const del = <S extends BoundarySchema>(path: string, schema: S) =>
       transport.request({ method: "DELETE", path }, decodeData(schema));
+    const getUserProfile = transport.request(
+      { method: "GET", path: HabiticaRoutes.user() },
+      decodeUserProfile,
+    );
 
     return HabiticaGateway.of({
       addChecklistItem: ({ taskId, text }) =>
@@ -179,11 +188,9 @@ const gatewayLayer = Layer.effect(
       feedPet: ({ foodKey, petKey }) =>
         post(HabiticaRoutes.feedPet(petKey, foodKey), {}, HabiticaMutationResult),
       getInventory: get(HabiticaRoutes.inventory(), HabiticaInventory),
-      getStats: get(HabiticaRoutes.user(), HabiticaProfile).pipe(
-        Effect.map((profile) => profile.stats),
-      ),
+      getStats: getUserProfile.pipe(Effect.map((profile) => profile.stats)),
       getTask: ({ taskId }) => get(HabiticaRoutes.task(taskId), HabiticaTask),
-      getUserProfile: get(HabiticaRoutes.user(), HabiticaProfile),
+      getUserProfile,
       hatchPet: ({ eggKey, hatchingPotionKey }) =>
         post(HabiticaRoutes.hatchPet(eggKey, hatchingPotionKey), {}, HabiticaMutationResult),
       listNotifications: get(HabiticaRoutes.notifications(), Schema.Array(HabiticaNotification)),

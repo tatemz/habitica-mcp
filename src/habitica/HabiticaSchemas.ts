@@ -21,6 +21,21 @@ export class HabiticaProfile extends Schema.Class<HabiticaProfile>("HabiticaProf
   stats: HabiticaStats,
 }) {}
 
+export class HabiticaApiUserProfile extends Schema.Class<HabiticaApiUserProfile>(
+  "HabiticaApiUserProfile",
+)({
+  id: Schema.String,
+  profile: Schema.Struct({ name: Schema.String }),
+  stats: HabiticaStats,
+}) {}
+
+export const habiticaProfileFromApiUser = (user: HabiticaApiUserProfile): HabiticaProfile =>
+  new HabiticaProfile({
+    displayName: user.profile.name,
+    id: user.id,
+    stats: user.stats,
+  });
+
 export class HabiticaChecklistItem extends Schema.Class<HabiticaChecklistItem>(
   "HabiticaChecklistItem",
 )({
