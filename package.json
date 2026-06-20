@@ -1,0 +1,54 @@
+{
+  "name": "habitica-mcp",
+  "version": "0.0.0",
+  "description": "Habitica Model Context Protocol server built with Effect v4 beta",
+  "license": "MIT",
+  "bin": {
+    "habitica-mcp": "dist/main.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": [],
+  "scripts": {
+    "build": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
+    "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm e2e && pnpm mutation && pnpm lint:knip",
+    "dev": "tsx src/main.ts",
+    "e2e": "NODE_OPTIONS=\"--import tsx\" effect-bdd --features \"e2e/**/*.feature\" --steps \"e2e/**/*.step.ts\" --reporter text --strict",
+    "format": "oxfmt .",
+    "format:check": "oxfmt . --check",
+    "lint": "pnpm lint:oxlint",
+    "lint:knip": "knip --config knip.jsonc",
+    "lint:oxlint": "oxlint . --deny-warnings",
+    "mutation": "stryker run",
+    "prepare": "lefthook install",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit"
+  },
+  "dependencies": {
+    "@effect/platform-node": "4.0.0-beta.78",
+    "effect": "4.0.0-beta.78"
+  },
+  "devDependencies": {
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/vitest-runner": "^9.6.1",
+    "@types/node": "^25.9.2",
+    "@vitest/coverage-v8": "^4.1.9",
+    "effect-bdd": "^0.4.0",
+    "knip": "^6.16.1",
+    "lefthook": "^2.1.9",
+    "oxfmt": "^0.54.0",
+    "oxlint": "^1.69.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@10.16.1"
+}

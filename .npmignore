@@ -1,0 +1,14 @@
+src/
+test/
+e2e/
+.cursor/
+coverage/
+reports/
+.stryker-tmp/
+*.log
+tsconfig.json
+tsconfig.test.json
+knip.jsonc
+lefthook.yml
+stryker.config.json
+vitest.config.ts

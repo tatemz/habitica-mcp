@@ -1,0 +1,18 @@
+---
+description: Effect v4 beta conventions for this repo
+globs: src/**/*.ts,test/**/*.ts
+alwaysApply: false
+---
+
+# Effect v4 Beta Rules
+
+Use Effect v4 beta APIs only. Keep `effect` and every `@effect/*` package on the
+same `4.0.0-beta.x` version.
+
+- Import schema from `effect` unless local docs prove a narrower import is required.
+- Prefer `Effect.gen` or `pipe()` when sequencing is meaningful.
+- Keep pure synchronous calculations pure; do not wrap everything in `Effect.succeed`.
+- Use Layers at runtime boundaries: MCP server, platform services, HTTP clients.
+- Do not call schema constructors at module scope for data that can fail validation.
+- Avoid compatibility shims for pre-release code. Replace the old path.
+- If an Effect v3 habit conflicts with v4 docs, trust the v4 docs and leave a focused test.

@@ -1,0 +1,18 @@
+---
+description: Deterministic MCP server behavior and Habitica safety rules
+globs: src/**/*.ts
+alwaysApply: false
+---
+
+# Deterministic MCP Rules
+
+MCP tools are an API. Treat schemas and response shapes as contracts.
+
+- Tool names are stable PascalCase nouns ending in `Tool` only when using Effect `Tool.make`.
+- Every tool has a narrow schema, explicit success type, and deterministic text/JSON output.
+- Do not print to stdout. Stdio MCP owns stdout; logs go to stderr.
+- Never expose Habitica credentials, auth headers, raw tokens, or full account dumps.
+- Mutating Habitica operations must be explicit in tool names and descriptions.
+- Prefer read-only tools first. Add writes only with tests and clear failure behavior.
+- Decode external API responses at the boundary before passing data to MCP responses.
+- Do not catch-and-hide API failures. Return a useful typed failure or let Effect report the defect.

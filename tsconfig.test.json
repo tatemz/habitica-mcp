@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "include": ["src", "test", "e2e", "vitest.config.ts"],
+  "compilerOptions": {
+    "declaration": false,
+    "noEmit": true,
+    "rootDir": "."
+  }
+}
