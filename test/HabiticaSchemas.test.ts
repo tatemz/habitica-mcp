@@ -2,6 +2,7 @@ import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 import {
   HabiticaApiInventory,
+  HabiticaApiNotifications,
   HabiticaApiUserProfile,
   habiticaProfileFromApiUser,
 } from "../src/habitica/HabiticaSchemas.js";
@@ -41,5 +42,17 @@ describe("HabiticaApiInventory", () => {
       mounts: { "Wolf-Base": false },
       pets: { "Wolf-Base": 5 },
     });
+  });
+});
+
+describe("HabiticaApiNotifications", () => {
+  it("decodes notifications from the Habitica /user notifications envelope", () => {
+    const apiNotifications = Schema.decodeUnknownSync(HabiticaApiNotifications)({
+      notifications: [{ id: "notification-1", seen: false, type: "info" }],
+    });
+
+    expect(apiNotifications.notifications).toEqual([
+      { id: "notification-1", seen: false, type: "info" },
+    ]);
   });
 });

@@ -63,8 +63,14 @@ export class HabiticaNotification extends Schema.Class<HabiticaNotification>(
 )({
   id: Schema.String,
   seen: Schema.Boolean,
-  text: Schema.String,
+  text: Schema.optional(Schema.String),
   type: Schema.String,
+}) {}
+
+export class HabiticaApiNotifications extends Schema.Class<HabiticaApiNotifications>(
+  "HabiticaApiNotifications",
+)({
+  notifications: Schema.Array(HabiticaNotification),
 }) {}
 
 export class HabiticaInventory extends Schema.Class<HabiticaInventory>("HabiticaInventory")({
