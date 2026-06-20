@@ -35,7 +35,17 @@ const SkillInput = Schema.Struct({
   targetId: Schema.optional(Schema.String),
 });
 const ShopItemInput = Schema.Struct({ key: Schema.String });
+const HelloWorldInput = Schema.Struct({ name: Schema.optional(Schema.String) });
 const HabiticaFailure = { failure: HabiticaErrorSchema } as const;
+
+const HelloWorldTool = Tool.make("HelloWorldTool", {
+  description: "Return a deterministic greeting for MCP smoke tests.",
+  parameters: HelloWorldInput,
+  success: Schema.String,
+})
+  .annotate(Tool.Readonly, true)
+  .annotate(Tool.Destructive, false)
+  .annotate(Tool.OpenWorld, false);
 
 const GetUserProfileTool = Tool.make("GetUserProfileTool", {
   ...HabiticaFailure,
@@ -351,6 +361,7 @@ const CastSkillTool = Tool.make("CastSkillTool", {
 
 /** @internal */
 export const HabiticaToolkit = Toolkit.make(
+  HelloWorldTool,
   GetUserProfileTool,
   GetStatsTool,
   ListTasksTool,
@@ -405,6 +416,7 @@ export const HabiticaToolHandlers = Effect.gen(function* () {
     GetStatsTool: () => gateway.getStats,
     GetTaskTool: gateway.getTask,
     GetUserProfileTool: () => gateway.getUserProfile,
+    HelloWorldTool: ({ name }) => Effect.succeed(`Hello, ${name ?? "world"}!`),
     HatchPetTool: gateway.hatchPet,
     ListNotificationsTool: () => gateway.listNotifications,
     ListRewardsTool: () => gateway.listTasks({ type: "reward" }),

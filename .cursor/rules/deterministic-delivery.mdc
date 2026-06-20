@@ -1,0 +1,18 @@
+---
+description: Deterministic delivery gates for habitica-mcp.
+alwaysApply: true
+---
+
+# Deterministic Delivery
+
+This repo optimizes for reproducible behavior over speed theatre.
+
+Rules:
+
+- Use `pnpm`; `packageManager` is pinned and policy-checked.
+- Run the smallest relevant check first, then widen only when risk justifies it.
+- Keep `pnpm check` as the merge gate. Do not weaken it to get green.
+- Generated artifacts stay out of git: `dist/`, `coverage/`, `.stryker-tmp/`, and `node_modules/`.
+- Every non-trivial behavior change gets one runnable check that fails if the behavior regresses.
+- Deterministic policy scripts should read structured files when practical; avoid shelling out for parsing.
+- If a rule is bad, delete or replace it with a specific reason. Do not add broad suppressions.

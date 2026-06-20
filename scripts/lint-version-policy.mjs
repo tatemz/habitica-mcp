@@ -74,6 +74,7 @@ for (const requiredScript of [
   "lint:oxlint",
   "lint:policy",
   "lint:quality-scope",
+  "lint:rules",
   "lint:versions",
   "mutation",
   "prepack",

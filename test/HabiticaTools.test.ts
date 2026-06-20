@@ -90,6 +90,7 @@ describe("HabiticaToolHandlers", () => {
   it("dispatches read tools through HabiticaGateway", async () => {
     const handlers = await Effect.runPromise(getHandlers);
 
+    await expect(Effect.runPromise(handlers.HelloWorldTool({}))).resolves.toBe("Hello, world!");
     await expect(Effect.runPromise(handlers.GetUserProfileTool())).resolves.toEqual(profile);
     await expect(Effect.runPromise(handlers.ListTasksTool({ type: "todo" }))).resolves.toEqual([
       todo,

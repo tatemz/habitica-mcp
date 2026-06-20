@@ -11,6 +11,10 @@ and schema-decodes Habitica API responses at the boundary.
 - Node.js `>=22.12.0`
 - pnpm `>=10`
 
+This repo uses pnpm rather than bun because the server runs on Node stdio, the
+lockfile is already deterministic, and the Effect MCP docs target Node runtime
+primitives.
+
 ## Install
 
 ```sh
@@ -65,6 +69,9 @@ GitHub Actions runs the same `pnpm check` gate on pushes to `main` and pull
 requests.
 
 ## Tool Surface
+
+`HelloWorldTool` returns a deterministic greeting and does not require Habitica
+credentials. Use it as the first MCP smoke test.
 
 Core tools cover profile, stats, tasks, tags, checklists, and notifications.
 Expanded tools cover rewards, inventory, shop items, pets, mounts, and skills.

@@ -1,5 +1,10 @@
 Feature: Habitica core tools
 
+  Scenario: Saying hello without Habitica credentials
+    Given the fake Habitica gateway is available
+    When I ask for hello world
+    Then the MCP greeting is Hello, world!
+
   Scenario: Listing todo tasks
     Given the fake Habitica gateway is available
     When I list todo tasks

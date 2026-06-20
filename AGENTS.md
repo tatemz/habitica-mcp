@@ -23,6 +23,9 @@ mutation behind vague natural-language magic.
 
 ## Codebase Style
 
+Use pnpm. Do not migrate to bun unless the runtime actually changes away from
+Node stdio and the lockfile/tooling story gets simpler, not merely different.
+
 Use Effect v4 beta interfaces. Keep Effect package versions aligned exactly.
 Prefer generators and `pipe()` chains when they clarify sequencing; do not wrap
 plain synchronous logic in Effect just to look functional.
@@ -53,6 +56,8 @@ MCP tools are an API. Treat schemas and response shapes as contracts.
   `Tool.make`.
 - Every tool has a narrow schema, explicit success type, and deterministic
   text/JSON output.
+- `HelloWorldTool` is the credential-free smoke test. Keep it boring and
+  deterministic.
 - Do not print to stdout. Stdio MCP owns stdout; logs go to stderr.
 - Never expose Habitica credentials, auth headers, raw tokens, or full account
   dumps.

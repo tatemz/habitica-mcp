@@ -1,0 +1,18 @@
+---
+description: Effect v4 beta MCP server rules.
+alwaysApply: true
+---
+
+# Effect v4 MCP
+
+Use the Effect v4 beta MCP APIs shown in `effect/unstable/ai`.
+
+Rules:
+
+- Keep `effect` and `@effect/*` packages pinned to the same beta version.
+- Build stdio servers with `McpServer.layerStdio`, `NodeStdio.layer`, and `NodeRuntime.runMain`.
+- Stdio stdout is protocol-owned. Logs and diagnostics go to stderr.
+- Define MCP tools with explicit parameter and success schemas.
+- Read-only tools are the default; mutating tools need explicit names, descriptions, and approval.
+- Decode external JSON at the boundary before returning data through MCP tools.
+- Keep pure synchronous logic pure. Use Effect for sequencing, services, failures, and runtime edges.
