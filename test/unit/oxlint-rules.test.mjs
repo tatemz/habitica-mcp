@@ -50,8 +50,8 @@ describe("habitica-mcp oxlint plugin", () => {
   tester.run("no-fallible-module-scope-make", rules["no-fallible-module-scope-make"], {
     valid: [
       {
-        code: "export const GreetingTool = Tool.make('GreetingTool', { success: Schema.String });",
-        filename: "/workspace/src/tools/GreetingTools.ts",
+        code: "export const ProfileTool = Tool.make('ProfileTool', { success: Schema.String });",
+        filename: "/workspace/src/tools/ProfileTools.ts",
       },
       {
         code: "export const makeUser = (id) => UserId.make(id);",

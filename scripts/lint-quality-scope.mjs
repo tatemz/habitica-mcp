@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-const deterministicModules = ["src/Greeting.ts", "src/habitica/HabiticaRoutes.ts"];
+const deterministicModules = ["src/habitica/HabiticaRoutes.ts"];
 
 const vitestConfig = await readFile(new URL("../vitest.config.ts", import.meta.url), "utf8");
 const strykerConfig = await readFile(new URL("../stryker.config.json", import.meta.url), "utf8");
