@@ -92,9 +92,9 @@ describe("HabiticaToolHandlers", () => {
 
     await expect(Effect.runPromise(handlers.HelloWorldTool({}))).resolves.toBe("Hello, world!");
     await expect(Effect.runPromise(handlers.GetUserProfileTool())).resolves.toEqual(profile);
-    await expect(Effect.runPromise(handlers.ListTasksTool({ type: "todo" }))).resolves.toEqual([
-      todo,
-    ]);
+    await expect(Effect.runPromise(handlers.ListTasksTool({ type: "todo" }))).resolves.toEqual({
+      tasks: [todo],
+    });
   });
 
   it("dispatches core write tools through HabiticaGateway", async () => {
@@ -111,7 +111,9 @@ describe("HabiticaToolHandlers", () => {
   it("dispatches expanded gameplay tools through HabiticaGateway", async () => {
     const handlers = await Effect.runPromise(getHandlers);
 
-    await expect(Effect.runPromise(handlers.ListShopItemsTool())).resolves.toEqual([shopItem]);
+    await expect(Effect.runPromise(handlers.ListShopItemsTool())).resolves.toEqual({
+      shopItems: [shopItem],
+    });
     await expect(
       Effect.runPromise(handlers.CastSkillTool({ skillKey: "fireball", targetId: "task-1" })),
     ).resolves.toEqual(mutation);

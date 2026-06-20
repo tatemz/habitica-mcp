@@ -37,6 +37,13 @@ const SkillInput = Schema.Struct({
 const ShopItemInput = Schema.Struct({ key: Schema.String });
 const HelloWorldInput = Schema.Struct({ name: Schema.optional(Schema.String) });
 const HabiticaFailure = { failure: HabiticaErrorSchema } as const;
+const HabiticaTasksOutput = Schema.Struct({ tasks: Schema.Array(HabiticaTask) });
+const HabiticaTagsOutput = Schema.Struct({ tags: Schema.Array(HabiticaTag) });
+const HabiticaNotificationsOutput = Schema.Struct({
+  notifications: Schema.Array(HabiticaNotification),
+});
+const HabiticaShopItemsOutput = Schema.Struct({ shopItems: Schema.Array(HabiticaShopItem) });
+const HabiticaSkillsOutput = Schema.Struct({ skills: Schema.Array(HabiticaSkill) });
 
 const HelloWorldTool = Tool.make("HelloWorldTool", {
   description: "Return a deterministic greeting for MCP smoke tests.",
@@ -69,7 +76,7 @@ const ListTasksTool = Tool.make("ListTasksTool", {
   ...HabiticaFailure,
   description: "Read Habitica tasks, optionally filtered by task type.",
   parameters: ListTasksInput,
-  success: Schema.Array(HabiticaTask),
+  success: HabiticaTasksOutput,
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
@@ -88,7 +95,7 @@ const GetTaskTool = Tool.make("GetTaskTool", {
 const ListTagsTool = Tool.make("ListTagsTool", {
   ...HabiticaFailure,
   description: "Read Habitica tags.",
-  success: Schema.Array(HabiticaTag),
+  success: HabiticaTagsOutput,
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
@@ -106,7 +113,7 @@ const GetInventoryTool = Tool.make("GetInventoryTool", {
 const ListNotificationsTool = Tool.make("ListNotificationsTool", {
   ...HabiticaFailure,
   description: "Read Habitica notifications.",
-  success: Schema.Array(HabiticaNotification),
+  success: HabiticaNotificationsOutput,
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
@@ -225,7 +232,7 @@ const ReadNotificationTool = Tool.make("ReadNotificationTool", {
 const ListRewardsTool = Tool.make("ListRewardsTool", {
   ...HabiticaFailure,
   description: "Read Habitica reward tasks.",
-  success: Schema.Array(HabiticaTask),
+  success: HabiticaTasksOutput,
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
@@ -278,7 +285,7 @@ const BuyRewardTool = Tool.make("BuyRewardTool", {
 const ListShopItemsTool = Tool.make("ListShopItemsTool", {
   ...HabiticaFailure,
   description: "Read Habitica shop items.",
-  success: Schema.Array(HabiticaShopItem),
+  success: HabiticaShopItemsOutput,
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
@@ -342,7 +349,7 @@ const EquipMountTool = Tool.make("EquipMountTool", {
 const ListSkillsTool = Tool.make("ListSkillsTool", {
   ...HabiticaFailure,
   description: "Read usable Habitica skills.",
-  success: Schema.Array(HabiticaSkill),
+  success: HabiticaSkillsOutput,
 })
   .annotate(Tool.Readonly, true)
   .annotate(Tool.Destructive, false)
@@ -418,12 +425,14 @@ export const HabiticaToolHandlers = Effect.gen(function* () {
     GetUserProfileTool: () => gateway.getUserProfile,
     HelloWorldTool: ({ name }) => Effect.succeed(`Hello, ${name ?? "world"}!`),
     HatchPetTool: gateway.hatchPet,
-    ListNotificationsTool: () => gateway.listNotifications,
-    ListRewardsTool: () => gateway.listTasks({ type: "reward" }),
-    ListShopItemsTool: () => gateway.listShopItems,
-    ListSkillsTool: () => gateway.listSkills,
-    ListTagsTool: () => gateway.listTags,
-    ListTasksTool: gateway.listTasks,
+    ListNotificationsTool: () =>
+      gateway.listNotifications.pipe(Effect.map((notifications) => ({ notifications }))),
+    ListRewardsTool: () =>
+      gateway.listTasks({ type: "reward" }).pipe(Effect.map((tasks) => ({ tasks }))),
+    ListShopItemsTool: () => gateway.listShopItems.pipe(Effect.map((shopItems) => ({ shopItems }))),
+    ListSkillsTool: () => gateway.listSkills.pipe(Effect.map((skills) => ({ skills }))),
+    ListTagsTool: () => gateway.listTags.pipe(Effect.map((tags) => ({ tags }))),
+    ListTasksTool: (input) => gateway.listTasks(input).pipe(Effect.map((tasks) => ({ tasks }))),
     ReadNotificationTool: gateway.readNotification,
     ScoreChecklistItemTool: gateway.scoreChecklistItem,
     ScoreTaskTool: gateway.scoreTask,

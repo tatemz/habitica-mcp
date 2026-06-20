@@ -121,7 +121,7 @@ const whenListTodoTasks = Bdd.when`I list todo tasks`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
     Effect.flatMap((handlers) => handlers.ListTasksTool({ type: "todo" })),
-    Effect.map((tasks) => ({ message: "", taskText: tasks[0]?.text ?? "" })),
+    Effect.map(({ tasks }) => ({ message: "", taskText: tasks[0]?.text ?? "" })),
   ),
 );
 
@@ -208,7 +208,7 @@ const whenListTags = Bdd.when`I list tags`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
     Effect.flatMap((handlers) => handlers.ListTagsTool()),
-    Effect.map((tags) => ({ message: tags[0]?.name ?? "", taskText: "" })),
+    Effect.map(({ tags }) => ({ message: tags[0]?.name ?? "", taskText: "" })),
   ),
 );
 
@@ -317,7 +317,7 @@ const whenListNotifications = Bdd.when`I list notifications`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
     Effect.flatMap((handlers) => handlers.ListNotificationsTool()),
-    Effect.map((notifications) => ({ message: notifications[0]?.text ?? "", taskText: "" })),
+    Effect.map(({ notifications }) => ({ message: notifications[0]?.text ?? "", taskText: "" })),
   ),
 );
 
@@ -336,7 +336,7 @@ const whenListRewards = Bdd.when`I list rewards`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
     Effect.flatMap((handlers) => handlers.ListRewardsTool()),
-    Effect.map((tasks) => ({ message: "", taskText: tasks[0]?.text ?? "" })),
+    Effect.map(({ tasks }) => ({ message: "", taskText: tasks[0]?.text ?? "" })),
   ),
 );
 
@@ -390,7 +390,7 @@ const whenListShopItems = Bdd.when`I list shop items`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
     Effect.flatMap((handlers) => handlers.ListShopItemsTool()),
-    Effect.map((items) => ({ message: items[0]?.text ?? "", taskText: "" })),
+    Effect.map(({ shopItems }) => ({ message: shopItems[0]?.text ?? "", taskText: "" })),
   ),
 );
 
@@ -462,7 +462,7 @@ const whenListSkills = Bdd.when`I list skills`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
     Effect.flatMap((handlers) => handlers.ListSkillsTool()),
-    Effect.map((skills) => ({ message: skills[0]?.text ?? "", taskText: "" })),
+    Effect.map(({ skills }) => ({ message: skills[0]?.text ?? "", taskText: "" })),
   ),
 );
 
