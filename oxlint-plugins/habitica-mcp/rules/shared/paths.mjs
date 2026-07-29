@@ -5,3 +5,5 @@ export const toolPath = (filename) => /\/src\/tools\//.test(filename);
 export const habiticaBoundaryPath = (filename) => /\/src\/habitica\//.test(filename);
 
 export const adapterPath = (filename) => /\/src\/habitica\/.*Adapter\.ts$/.test(filename);
+
+export const testPath = (filename) => /\/(?:test|e2e)\/.*\.ts$/.test(filename);

@@ -1,10 +1,14 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "coverageAnalysis": "perTest",
-  "mutate": ["src/habitica/HabiticaRoutes.ts"],
+  "mutate": ["src/**/*.ts", "!src/main.ts", "!src/mainHttp.ts"],
   "packageManager": "pnpm",
   "plugins": ["@stryker-mutator/vitest-runner"],
-  "reporters": ["clear-text", "progress"],
+  "reporters": ["clear-text", "progress", "json"],
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation.json"
+  },
+  "incrementalFile": "reports/mutation/stryker-incremental.json",
   "testRunner": "vitest",
   "thresholds": {
     "break": 100,

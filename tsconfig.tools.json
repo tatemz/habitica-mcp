@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "include": ["scripts"],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "declaration": false,
+    "noEmit": true,
+    "rootDir": "."
+  }
+}

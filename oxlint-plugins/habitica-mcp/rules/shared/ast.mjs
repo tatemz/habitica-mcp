@@ -129,6 +129,33 @@ export const walkExpression = (node, visit, seen = new WeakSet()) => {
   }
 };
 
+const skippedKeys = new Set(["comments", "end", "loc", "parent", "range", "start"]);
+
+/**
+ * Unlike walkExpression, this descends through function bodies. Assertions live
+ * inside test callbacks, so a walker that stops at the function boundary would
+ * never see them.
+ */
+export const walkAst = (node, visit, seen = new WeakSet()) => {
+  if (node === null || typeof node !== "object" || seen.has(node)) {
+    return;
+  }
+  seen.add(node);
+  visit(node);
+
+  for (const [key, value] of Object.entries(node)) {
+    if (skippedKeys.has(key)) {
+      continue;
+    }
+
+    for (const child of Array.isArray(value) ? value : [value]) {
+      if (child?.type !== undefined) {
+        walkAst(child, visit, seen);
+      }
+    }
+  }
+};
+
 export const walkTopLevelExpression = (statement, visit) => {
   if (statement.type === "VariableDeclaration") {
     for (const declaration of statement.declarations) {

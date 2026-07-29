@@ -12,7 +12,11 @@ Rules:
 - Use `pnpm`; `packageManager` is pinned and policy-checked.
 - Run the smallest relevant check first, then widen only when risk justifies it.
 - Keep `pnpm check` as the merge gate. Do not weaken it to get green.
-- Generated artifacts stay out of git: `dist/`, `coverage/`, `.stryker-tmp/`, and `node_modules/`.
+- Generated artifacts stay out of git: `dist/`, `coverage/`, `reports/`, `.stryker-tmp/`, and `node_modules/`.
 - Every non-trivial behavior change gets one runnable check that fails if the behavior regresses.
 - Deterministic policy scripts should read structured files when practical; avoid shelling out for parsing.
 - If a rule is bad, delete or replace it with a specific reason. Do not add broad suppressions.
+- Coverage and mutation scope is all of `src/**/*.ts`. Narrow it only through a named exception in `scripts/policy-exceptions.ts` with a rationale and a removal condition.
+- Never add a suppression comment. There is no `oxlint-disable`, `@ts-ignore`, or `Stryker disable` path; fix the code instead.
+- Lower `policy/mutation-baselines.json` only when a refactor genuinely removes mutants, and record why in its `rationale`.
+- Assert exact values in tests. No `toBeDefined`/`toBeTruthy`/`toBeFalsy`, and no bare `toThrow()`.

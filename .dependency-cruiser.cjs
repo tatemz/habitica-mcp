@@ -40,14 +40,16 @@ module.exports = {
       },
     },
     {
-      name: "main-is-only-runtime-launch-edge",
+      name: "process-entries-import-only-composed-layers",
       severity: "error",
-      comment: "src/main.ts should stay a tiny executable edge.",
+      comment:
+        "The entry files exist to bind a transport and launch, which is the one thing tests cannot do in-process. They may compose the exported layers and the server identity, but reaching into tools, resources, prompts, or the Habitica client would put untestable logic behind a process boundary.",
       from: {
-        path: "^src/main\\.ts$",
+        path: "^src/main[A-Za-z]*\\.ts$",
       },
       to: {
-        pathNot: "^src/HabiticaMcp\\.ts$",
+        path: "^src/",
+        pathNot: "^src/(HabiticaMcp\\.ts|HabiticaMcpHttp\\.ts|ServerInfo\\.ts)$",
       },
     },
     {
@@ -84,25 +86,27 @@ module.exports = {
       },
     },
     {
-      name: "resources-and-prompts-stay-passive",
+      name: "resources-and-prompts-depend-on-habitica-port",
       severity: "error",
-      comment: "Resources and prompts describe capabilities; they should not call Habitica.",
+      comment:
+        "A resource template may read through the gateway port, the same as a tool does. It must not reach transport details, config, or the tool layer, so the port stays the only way into Habitica.",
       from: {
         path: "^src/(resources|prompts)/",
       },
       to: {
-        path: "^src/(config/|habitica/|tools/)",
+        path: "^src/(config/|tools/|habitica/(HabiticaHttpAdapter|HabiticaTransport|HabiticaRoutes)\\.ts$)",
       },
     },
     {
-      name: "tests-do-not-import-runtime-main",
+      name: "tests-do-not-import-runtime-entries",
       severity: "error",
-      comment: "Tests should exercise behavior, not launch the process edge.",
+      comment:
+        "Importing an entry file launches a transport. Tests drive the composed layers instead, which is why the entries hold nothing but the binding.",
       from: {
         path: "^(test|e2e)/",
       },
       to: {
-        path: "^src/main\\.ts$",
+        path: "^src/main[A-Za-z]*\\.ts$",
       },
     },
     {

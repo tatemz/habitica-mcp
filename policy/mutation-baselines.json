@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "baseline": {
+    "mutantCount": 609,
+    "errors": 0,
+    "survived": 0,
+    "noCoverage": 0,
+    "rationale": "Raised from 549 after the mutate scope widened again: the only remaining exclusions are src/main.ts and src/mainHttp.ts, which do nothing but bind a transport and launch. Retiring the former composition-root and mcp-declaration-surface exceptions brought HabiticaMcp.ts, HabiticaMcpHttp.ts, ServerInfo.ts, HabiticaPrompts.ts, and HabiticaResources.ts under mutation, and the new tool titles, idempotency hints, parameter descriptions, and task resource template added the rest. A drop below this count means the scope narrowed again; the survived, errors, and noCoverage ratchets only move down."
+  }
+}

@@ -101,12 +101,22 @@ describe("habitica-mcp oxlint plugin", () => {
 
   tester.run("mutating-tool-name-is-explicit", rules["mutating-tool-name-is-explicit"], {
     valid: [
-      "const CreateTaskTool = Tool.make('CreateTaskTool', { description: 'Create a task', success: Schema.String });",
+      "const CreateTaskTool = Tool.make('habitica_create_task', { description: 'Create a task', success: Schema.String });",
+      "const ListTasksTool = Tool.make('habitica_list_tasks', { description: 'List tasks', success: Schema.String });",
+      "const ListRewardsTool = Tool.make('habitica_list_rewards', { description: 'List rewards the user can buy with gold', success: Schema.String });",
     ],
     invalid: [
       {
-        code: "const TaskTool = Tool.make('TaskTool', { description: 'Create a task', success: Schema.String });",
-        errors: [{ message: /explicit verb/ }],
+        code: "const TaskTool = Tool.make('habitica_task', { description: 'Create a task', success: Schema.String });",
+        errors: [{ message: /name the verb explicitly/ }],
+      },
+      {
+        code: "const TaskTool = Tool.make('habitica_task', { description: 'Does a thing', needsApproval: true, success: Schema.String });",
+        errors: [{ message: /name the verb explicitly/ }],
+      },
+      {
+        code: "const CreateTaskTool = Tool.make('CreateTaskTool', { description: 'Create a task', success: Schema.String });",
+        errors: [{ message: /name the verb explicitly/ }],
       },
     ],
   });
@@ -150,6 +160,44 @@ describe("habitica-mcp oxlint plugin", () => {
         code: "const body = await response.json();",
         filename: "/workspace/src/habitica/HabiticaHttpAdapter.ts",
         errors: [{ message: /Schema/ }],
+      },
+    ],
+  });
+
+  tester.run("test-assertion-quality", rules["test-assertion-quality"], {
+    valid: [
+      {
+        code: "it('pins the tag', () => { expect(error._tag).toBe('HabiticaApiError'); });",
+        filename: "/workspace/test/Habitica.test.ts",
+      },
+      {
+        code: "it('pins the thrown contract', () => { expect(decode).toThrow(/text/); });",
+        filename: "/workspace/test/Habitica.test.ts",
+      },
+      {
+        code: "it('pins a clean decode', () => { expect(decode).not.toThrow(); });",
+        filename: "/workspace/test/Habitica.test.ts",
+      },
+      {
+        code: "it('is ignored outside test paths', () => { expect(value).toBeDefined(); });",
+        filename: "/workspace/src/HabiticaMcp.ts",
+      },
+    ],
+    invalid: [
+      {
+        code: "it('asserts nothing useful', () => { expect(value).toBeDefined(); });",
+        filename: "/workspace/test/Habitica.test.ts",
+        errors: [{ message: /no useful assertion/ }, { message: /toBeDefined/ }],
+      },
+      {
+        code: "it('throws something', () => { expect(decode).toThrow(); });",
+        filename: "/workspace/test/Habitica.test.ts",
+        errors: [{ message: /no useful assertion/ }, { message: /expected error contract/ }],
+      },
+      {
+        code: "it('does nothing at all', () => { const value = 1; });",
+        filename: "/workspace/test/Habitica.test.ts",
+        errors: [{ message: /no useful assertion/ }],
       },
     ],
   });

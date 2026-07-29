@@ -3,8 +3,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ["src/HabiticaMcp.ts", "src/main.ts"],
-      include: ["src/habitica/HabiticaRoutes.ts"],
+      exclude: ["src/main.ts", "src/mainHttp.ts"],
+      include: ["src/**/*.ts"],
       thresholds: {
         branches: 100,
         functions: 100,

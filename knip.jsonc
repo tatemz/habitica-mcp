@@ -4,9 +4,10 @@
   "project": [
     "src/**/*.ts",
     "test/**/*.ts",
+    "test/**/*.mjs",
     "e2e/**/*.ts",
     "oxlint-plugins/**/*.mjs",
-    "scripts/**/*.mjs",
-    "*.config.ts",
-  ],
+    "scripts/**/*.ts",
+    "*.config.ts"
+  ]
 }

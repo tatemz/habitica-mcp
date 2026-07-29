@@ -5,9 +5,18 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Nightly full mutation run so cached incremental state can never become the
+    # only truth about the mutation score.
+    - cron: "0 7 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  check:
+  gates:
+    name: Gates (no mutation)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,4 +28,47 @@ jobs:
           node-version: 22.12.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
+      - run: pnpm check:without-mutation
+
+  mutation:
+    name: Mutation
+    runs-on: ubuntu-latest
+    env:
+      # Pull requests iterate fast on cached incremental state; push and
+      # scheduled runs force a full rebuild so the incremental file stays honest.
+      MUTATION_FULL: ${{ (github.event_name == 'pull_request') && '0' || '1' }}
+      # Pinned so shared-runner timing stays stable and timeouts are not flaky.
+      MUTATION_CONCURRENCY: "4"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.16.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Restore incremental mutation cache
+        if: env.MUTATION_FULL == '0'
+        uses: actions/cache@v4
+        with:
+          path: reports/mutation/stryker-incremental.json
+          key: stryker-incremental-${{ github.sha }}
+          restore-keys: |
+            stryker-incremental-
+
+      - name: Run mutation (incremental)
+        if: env.MUTATION_FULL == '0'
+        run: pnpm mutation:dev --concurrency "$MUTATION_CONCURRENCY"
+
+      - name: Run mutation (full)
+        if: env.MUTATION_FULL == '1'
+        run: pnpm mutation:run --concurrency "$MUTATION_CONCURRENCY"
+
+      - name: Mutation report health
+        run: pnpm lint:mutation-report-health
+
+      - name: Mutation baselines
+        run: pnpm lint:mutation-baselines

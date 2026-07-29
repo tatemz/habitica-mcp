@@ -13,6 +13,7 @@ import {
   type HabiticaError,
   HabiticaNotFoundError,
   HabiticaRateLimitError,
+  isHabiticaError,
 } from "./HabiticaErrors.js";
 import { HabiticaGateway } from "./HabiticaGateway.js";
 import { HabiticaRoutes, taskListUrlParams } from "./HabiticaRoutes.js";
@@ -66,15 +67,15 @@ const decodeData =
       Effect.map((body) => (body as { readonly data: S["Type"] }).data),
     );
 
+const requestForMethodName = {
+  DELETE: HttpClientRequest.delete,
+  GET: HttpClientRequest.get,
+  POST: HttpClientRequest.post,
+  PUT: HttpClientRequest.put,
+};
+
 const methodRequest = (request: HabiticaTransportRequest) => {
-  const requestForMethod =
-    request.method === "GET"
-      ? HttpClientRequest.get(request.path)
-      : request.method === "POST"
-        ? HttpClientRequest.post(request.path)
-        : request.method === "PUT"
-          ? HttpClientRequest.put(request.path)
-          : HttpClientRequest.delete(request.path);
+  const requestForMethod = requestForMethodName[request.method](request.path);
 
   const withParams =
     request.urlParams === undefined
@@ -86,19 +87,25 @@ const methodRequest = (request: HabiticaTransportRequest) => {
     : withParams.pipe(HttpClientRequest.bodyJsonUnsafe(request.body));
 };
 
-const errorForStatus = (status: number): HabiticaError =>
-  status === 401 || status === 403
-    ? new HabiticaAuthError({ message: "Habitica rejected the configured credentials." })
-    : status === 404
-      ? new HabiticaNotFoundError({ message: "Habitica resource was not found." })
-      : status === 429
-        ? new HabiticaRateLimitError({ message: "Habitica rate limit exceeded." })
-        : new HabiticaApiError({ message: "Habitica API request failed.", status });
+const errorForStatusCode: Readonly<Record<number, () => HabiticaError>> = {
+  401: () => new HabiticaAuthError({ message: "Habitica rejected the configured credentials." }),
+  403: () => new HabiticaAuthError({ message: "Habitica rejected the configured credentials." }),
+  404: () => new HabiticaNotFoundError({ message: "Habitica resource was not found." }),
+  429: () => new HabiticaRateLimitError({ message: "Habitica rate limit exceeded." }),
+};
 
+const errorForStatus = (status: number): HabiticaError =>
+  errorForStatusCode[status]?.() ??
+  new HabiticaApiError({ message: "Habitica API request failed.", status });
+
+/**
+ * The 2xx range check is delegated to the platform so the success window has a
+ * single definition, and only the mapping to Habitica errors lives here.
+ */
 const ensureOk = (response: HttpClientResponse.HttpClientResponse) =>
-  response.status >= 200 && response.status < 300
-    ? Effect.succeed(response)
-    : Effect.fail(errorForStatus(response.status));
+  HttpClientResponse.filterStatusOk(response).pipe(
+    Effect.mapError(() => errorForStatus(response.status)),
+  );
 
 const rewardInput = (input: CreateTaskInput): CreateTaskInput =>
   input.notes === undefined
@@ -156,19 +163,16 @@ const transportLayer = Layer.effect(
           Effect.flatMap(ensureOk),
           Effect.flatMap(HttpClientResponse.schemaBodyJson(Schema.Unknown)),
           Effect.flatMap(decode),
-          Effect.mapError((error) =>
-            error instanceof HabiticaAuthError ||
-            error instanceof HabiticaApiError ||
-            error instanceof HabiticaDecodeError ||
-            error instanceof HabiticaNotFoundError ||
-            error instanceof HabiticaRateLimitError
-              ? error
-              : new HabiticaApiError({ message: "Habitica HTTP transport failed." }),
+          Effect.mapError(
+            (error): HabiticaError =>
+              isHabiticaError(error)
+                ? error
+                : new HabiticaApiError({ message: "Habitica HTTP transport failed." }),
           ),
         ),
     });
   }),
-).pipe(Layer.provide(FetchHttpClient.layer));
+);
 
 const gatewayLayer = Layer.effect(
   HabiticaGateway,
@@ -258,9 +262,17 @@ const gatewayLayer = Layer.effect(
         put(HabiticaRoutes.task(input.id), input, HabiticaTask),
     });
   }),
-).pipe(Layer.provide(transportLayer));
+);
 
 export const HabiticaHttpAdapter = {
+  /** Gateway over an injected {@link HabiticaTransport}. */
   gatewayLayer,
+  /**
+   * Production wiring: gateway over the HTTP transport over `fetch`. The
+   * concrete HTTP client is chosen here rather than inside `transportLayer` so
+   * tests can drive the transport against a stub client.
+   */
+  layer: gatewayLayer.pipe(Layer.provide(transportLayer), Layer.provide(FetchHttpClient.layer)),
+  /** Transport over an injected `HttpClient` and {@link HabiticaConfig}. */
   transportLayer,
 } as const;

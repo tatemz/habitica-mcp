@@ -19,11 +19,13 @@
     "url": "git+https://github.com/tatemz/habitica-mcp.git"
   },
   "bin": {
-    "habitica-mcp": "dist/main.js"
+    "habitica-mcp": "dist/main.js",
+    "habitica-mcp-http": "dist/mainHttp.js"
   },
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
+    "LICENSE",
     "README.md"
   ],
   "type": "module",
@@ -43,30 +45,43 @@
   },
   "scripts": {
     "build": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
-    "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm e2e && pnpm mutation && pnpm lint:knip",
+    "check": "pnpm check:without-mutation && pnpm mutation",
+    "check:without-mutation": "pnpm build && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:coverage && pnpm e2e",
     "dev": "tsx src/main.ts",
+    "dev:http": "tsx src/mainHttp.ts",
     "e2e": "NODE_OPTIONS=\"--import tsx\" effect-bdd --features \"e2e/**/*.feature\" --steps \"e2e/**/*.step.ts\" --reporter text --strict",
     "format": "oxfmt .",
     "format:check": "oxfmt . --check",
-    "lint": "pnpm lint:policy && pnpm lint:rules && pnpm lint:versions && pnpm lint:quality-scope && pnpm lint:deps && pnpm lint:custom-rule-tests && pnpm lint:oxlint",
-    "lint:custom-rule-tests": "node scripts/lint-custom-rule-tests.mjs && node --test test/unit/oxlint-rules.test.mjs",
+    "lint": "pnpm lint:policy && pnpm lint:deps && pnpm lint:custom-rule-tests && pnpm lint:oxlint && pnpm lint:knip",
+    "lint:coverage-policy": "tsx scripts/lint-coverage-policy.ts",
+    "lint:custom-rule-tests": "tsx scripts/lint-custom-rule-tests.ts && node --test test/unit/oxlint-rules.test.mjs",
     "lint:deps": "depcruise --config .dependency-cruiser.cjs src test e2e scripts oxlint-plugins",
     "lint:knip": "knip --config knip.jsonc",
+    "lint:mutation-baselines": "tsx scripts/lint-mutation-baselines.ts",
+    "lint:mutation-report-health": "tsx scripts/lint-mutation-report-health.ts",
+    "lint:mutation-scope": "tsx scripts/lint-mutation-scope.ts",
+    "lint:noop-scripts": "tsx scripts/lint-noop-scripts.ts",
     "lint:oxlint": "oxlint . --deny-warnings",
-    "lint:policy": "node scripts/lint-suppression-policy.mjs",
-    "lint:quality-scope": "node scripts/lint-quality-scope.mjs",
-    "lint:rules": "node scripts/lint-rules-policy.mjs",
-    "lint:versions": "node scripts/lint-version-policy.mjs",
-    "mutation": "stryker run",
+    "lint:policy": "pnpm lint:suppression-policy && pnpm lint:repo-path-policy && pnpm lint:noop-scripts && pnpm lint:rules && pnpm lint:versions && pnpm lint:policy-exception-health && pnpm lint:mutation-scope && pnpm lint:stryker-config && pnpm lint:coverage-policy",
+    "lint:policy-exception-health": "tsx scripts/lint-policy-exception-health.ts",
+    "lint:repo-path-policy": "tsx scripts/lint-repo-path-policy.ts",
+    "lint:rules": "tsx scripts/lint-rules-policy.ts",
+    "lint:stryker-config": "tsx scripts/lint-stryker-config.ts",
+    "lint:suppression-policy": "tsx scripts/lint-suppression-policy.ts",
+    "lint:versions": "tsx scripts/lint-version-policy.ts",
+    "mutation": "pnpm mutation:run && pnpm lint:mutation-report-health && pnpm lint:mutation-baselines",
+    "mutation:dev": "stryker run --incremental",
+    "mutation:run": "stryker run",
     "prepack": "pnpm build",
     "prepare": "lefthook install",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc -p tsconfig.test.json --noEmit"
+    "typecheck": "tsc -p tsconfig.test.json --noEmit && pnpm typecheck:tools",
+    "typecheck:tools": "tsc -p tsconfig.tools.json --noEmit"
   },
   "dependencies": {
-    "@effect/platform-node": "4.0.0-beta.78",
-    "effect": "4.0.0-beta.78"
+    "@effect/platform-node": "4.0.0-beta.102",
+    "effect": "4.0.0-beta.102"
   },
   "devDependencies": {
     "@stryker-mutator/core": "^9.6.1",
@@ -74,12 +89,12 @@
     "@types/node": "^25.9.2",
     "@vitest/coverage-v8": "^4.1.9",
     "dependency-cruiser": "^17.4.3",
-    "effect-bdd": "^0.4.0",
-    "knip": "^6.16.1",
+    "effect-bdd": "^0.6.0",
+    "knip": "^6.29.0",
     "lefthook": "^2.1.9",
-    "oxfmt": "^0.54.0",
-    "oxlint": "^1.69.0",
-    "oxlint-tsgolint": "^0.23.0",
+    "oxfmt": "^0.61.0",
+    "oxlint": "^1.76.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"

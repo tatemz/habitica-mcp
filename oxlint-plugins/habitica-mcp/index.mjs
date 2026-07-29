@@ -39,6 +39,10 @@ import {
   noUntypedToolSuccessRuleName,
 } from "./rules/no-untyped-tool-success/rule.mjs";
 import {
+  testAssertionQuality,
+  testAssertionQualityRuleName,
+} from "./rules/test-assertion-quality/rule.mjs";
+import {
   toolsDependOnGatewayPort,
   toolsDependOnGatewayPortRuleName,
 } from "./rules/tools-depend-on-gateway-port/rule.mjs";
@@ -54,6 +58,7 @@ export const rules = {
   [noRawHabiticaCredentialsRuleName]: noRawHabiticaCredentials,
   [noUncheckedJsonBoundaryRuleName]: noUncheckedJsonBoundary,
   [noUntypedToolSuccessRuleName]: noUntypedToolSuccess,
+  [testAssertionQualityRuleName]: testAssertionQuality,
   [toolsDependOnGatewayPortRuleName]: toolsDependOnGatewayPort,
 };
 

@@ -25,11 +25,12 @@
   ],
   "jsPlugins": ["./oxlint-plugins/habitica-mcp/index.mjs"],
   "rules": {
-    "complexity": ["error", { "max": 6 }],
+    "complexity": ["error", { "max": 4 }],
     "eqeqeq": "error",
     "import/no-duplicates": "error",
     "import/no-self-import": "error",
     "no-var": "error",
+    "no-underscore-dangle": ["error", { "allow": ["_id", "_op", "_tag"] }],
     "prefer-const": "error",
     "typescript/consistent-type-exports": "error",
     "typescript/consistent-type-imports": "error",
@@ -50,9 +51,35 @@
     "habitica-mcp/no-raw-habitica-credentials": "error",
     "habitica-mcp/no-unchecked-json-boundary": "error",
     "habitica-mcp/no-untyped-tool-success": "error",
+    "habitica-mcp/test-assertion-quality": "error",
     "habitica-mcp/tools-depend-on-gateway-port": "error"
   },
   "overrides": [
+    {
+      "files": ["src/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "fs", "message": "Use effect FileSystem at the boundary, not Node fs." },
+              {
+                "name": "fs/promises",
+                "message": "Use effect FileSystem at the boundary, not Node fs."
+              },
+              {
+                "name": "node:fs",
+                "message": "Use effect FileSystem at the boundary, not Node fs."
+              },
+              {
+                "name": "node:fs/promises",
+                "message": "Use effect FileSystem at the boundary, not Node fs."
+              }
+            ]
+          }
+        ]
+      }
+    },
     {
       "files": ["test/**", "e2e/**", "scripts/**"],
       "rules": {

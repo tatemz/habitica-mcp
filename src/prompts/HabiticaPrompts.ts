@@ -1,47 +1,52 @@
 import { Effect, Schema } from "effect";
 import { McpServer } from "effect/unstable/ai";
+import {
+  dailyPlanningContent,
+  focusCompletions,
+  habitCheckInContent,
+  moodCompletions,
+  taskReviewContent,
+  taskTypeCompletions,
+} from "./HabiticaPromptContent.js";
 
 export const DailyPlanningPrompt = McpServer.prompt({
-  name: "Daily Planning",
+  name: "habitica_daily_planning",
   description: "Plan a Habitica day from current tasks and stats.",
   parameters: {
-    focus: Schema.optional(Schema.String),
+    focus: Schema.optional(Schema.String).annotate({
+      description: "Task area to plan around, such as dailies, todos, habits, or rewards.",
+    }),
   },
   completion: {
-    focus: () => Effect.succeed(["dailies", "todos", "habits", "rewards"]),
+    focus: () => Effect.succeed([...focusCompletions]),
   },
-  content: ({ focus }) =>
-    Effect.succeed(
-      `Use GetStatsTool and ListTasksTool to plan today's Habitica work${focus === undefined ? "." : ` for ${focus}.`}`,
-    ),
+  content: ({ focus }) => Effect.succeed(dailyPlanningContent(focus)),
 });
 
 export const TaskReviewPrompt = McpServer.prompt({
-  name: "Task Review",
+  name: "habitica_task_review",
   description: "Review Habitica tasks and suggest safe updates.",
   parameters: {
-    taskType: Schema.optional(Schema.String),
+    taskType: Schema.optional(Schema.String).annotate({
+      description: "Restrict the review to one task type: habit, daily, todo, or reward.",
+    }),
   },
   completion: {
-    taskType: () => Effect.succeed(["habit", "daily", "todo", "reward"]),
+    taskType: () => Effect.succeed([...taskTypeCompletions]),
   },
-  content: ({ taskType }) =>
-    Effect.succeed(
-      `Use ListTasksTool${taskType === undefined ? "" : ` filtered to ${taskType}`} and propose explicit changes before using mutating tools.`,
-    ),
+  content: ({ taskType }) => Effect.succeed(taskReviewContent(taskType)),
 });
 
 export const HabitCheckInPrompt = McpServer.prompt({
-  name: "Habit Check-In",
+  name: "habitica_habit_check_in",
   description: "Check in on Habitica habits without scoring them automatically.",
   parameters: {
-    mood: Schema.optional(Schema.String),
+    mood: Schema.optional(Schema.String).annotate({
+      description: "Current energy or mood, such as steady, blocked, low-energy, or high-energy.",
+    }),
   },
   completion: {
-    mood: () => Effect.succeed(["steady", "blocked", "low-energy", "high-energy"]),
+    mood: () => Effect.succeed([...moodCompletions]),
   },
-  content: ({ mood }) =>
-    Effect.succeed(
-      `Use ListTasksTool for habits and ask before ScoreTaskTool${mood === undefined ? "." : `; user mood: ${mood}.`}`,
-    ),
+  content: ({ mood }) => Effect.succeed(habitCheckInContent(mood)),
 });

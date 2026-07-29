@@ -112,7 +112,7 @@ const givenFakeGateway = Bdd.given`the fake Habitica gateway is available`(() =>
 const whenAskForHelloWorld = Bdd.when`I ask for hello world`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.HelloWorldTool({})),
+    Effect.flatMap((handlers) => handlers.habitica_hello_world({})),
     Effect.map((greeting) => ({ message: greeting, taskText: "" })),
   ),
 );
@@ -120,7 +120,7 @@ const whenAskForHelloWorld = Bdd.when`I ask for hello world`(() =>
 const whenListTodoTasks = Bdd.when`I list todo tasks`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.ListTasksTool({ type: "todo" })),
+    Effect.flatMap((handlers) => handlers.habitica_list_tasks({ type: "todo" })),
     Effect.map(({ tasks }) => ({ message: "", taskText: tasks[0]?.text ?? "" })),
   ),
 );
@@ -128,7 +128,7 @@ const whenListTodoTasks = Bdd.when`I list todo tasks`(() =>
 const whenReadUserProfile = Bdd.when`I read the user profile`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.GetUserProfileTool()),
+    Effect.flatMap((handlers) => handlers.habitica_get_user_profile()),
     Effect.map((user) => ({ message: user.displayName, taskText: "" })),
   ),
 );
@@ -136,7 +136,7 @@ const whenReadUserProfile = Bdd.when`I read the user profile`(() =>
 const whenReadStats = Bdd.when`I read stats`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.GetStatsTool()),
+    Effect.flatMap((handlers) => handlers.habitica_get_stats()),
     Effect.map((stats) => ({ message: `level ${stats.lvl}`, taskText: "" })),
   ),
 );
@@ -145,7 +145,7 @@ const whenGetTask = Bdd.when`I get task ${taskIdCapture}`(
   ({ taskId: capturedTaskId }: { readonly taskId: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.GetTaskTool({ taskId: capturedTaskId })),
+      Effect.flatMap((handlers) => handlers.habitica_get_task({ taskId: capturedTaskId })),
       Effect.map((task) => ({ message: "", taskText: task.text })),
     ),
 );
@@ -155,7 +155,7 @@ const whenCreateTodo = Bdd.when`I create a todo named ${taskNameCapture}`(
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.CreateTaskTool({ text: capturedTaskName, type: "todo" }),
+        handlers.habitica_create_task({ text: capturedTaskName, type: "todo" }),
       ),
       Effect.map((task) => ({ message: "", taskText: task.text })),
     ),
@@ -172,7 +172,7 @@ const whenUpdateTask = Bdd.when`I update task ${taskIdCapture} to ${taskNameCapt
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.UpdateTaskTool({ id: capturedTaskId, text: capturedTaskName }),
+        handlers.habitica_update_task({ id: capturedTaskId, text: capturedTaskName }),
       ),
       Effect.map((task) => ({ message: "", taskText: task.text })),
     ),
@@ -182,7 +182,7 @@ const whenDeleteTask = Bdd.when`I delete task ${taskIdCapture}`(
   ({ taskId: capturedTaskId }: { readonly taskId: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.DeleteTaskTool({ taskId: capturedTaskId })),
+      Effect.flatMap((handlers) => handlers.habitica_delete_task({ taskId: capturedTaskId })),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
 );
@@ -198,7 +198,7 @@ const whenScoreTask = Bdd.when`I score task ${taskIdCapture} ${directionCapture}
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.ScoreTaskTool({ direction: capturedDirection, taskId: capturedTaskId }),
+        handlers.habitica_score_task({ direction: capturedDirection, taskId: capturedTaskId }),
       ),
       Effect.map((task) => ({ message: "", taskText: task.text })),
     ),
@@ -207,7 +207,7 @@ const whenScoreTask = Bdd.when`I score task ${taskIdCapture} ${directionCapture}
 const whenListTags = Bdd.when`I list tags`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.ListTagsTool()),
+    Effect.flatMap((handlers) => handlers.habitica_list_tags()),
     Effect.map(({ tags }) => ({ message: tags[0]?.name ?? "", taskText: "" })),
   ),
 );
@@ -216,7 +216,7 @@ const whenCreateTag = Bdd.when`I create tag ${tagNameCapture}`(
   ({ tagName: capturedTagName }: { readonly tagName: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.CreateTagTool({ name: capturedTagName })),
+      Effect.flatMap((handlers) => handlers.habitica_create_tag({ name: capturedTagName })),
       Effect.map((tag) => ({ message: tag.name, taskText: "" })),
     ),
 );
@@ -233,7 +233,10 @@ const whenAddChecklistItem =
       HabiticaToolHandlers.pipe(
         Effect.provideService(HabiticaGateway, fakeGateway),
         Effect.flatMap((handlers) =>
-          handlers.AddChecklistItemTool({ taskId: capturedTaskId, text: capturedChecklistText }),
+          handlers.habitica_add_checklist_item({
+            taskId: capturedTaskId,
+            text: capturedChecklistText,
+          }),
         ),
         Effect.map((task) => ({ message: "", taskText: task.text })),
       ),
@@ -253,7 +256,7 @@ const whenUpdateChecklistItem =
       HabiticaToolHandlers.pipe(
         Effect.provideService(HabiticaGateway, fakeGateway),
         Effect.flatMap((handlers) =>
-          handlers.UpdateChecklistItemTool({
+          handlers.habitica_update_checklist_item({
             itemId: capturedChecklistItemId,
             taskId: capturedTaskId,
             text: capturedChecklistText,
@@ -275,7 +278,7 @@ const whenScoreChecklistItem =
       HabiticaToolHandlers.pipe(
         Effect.provideService(HabiticaGateway, fakeGateway),
         Effect.flatMap((handlers) =>
-          handlers.ScoreChecklistItemTool({
+          handlers.habitica_score_checklist_item({
             itemId: capturedChecklistItemId,
             taskId: capturedTaskId,
           }),
@@ -296,7 +299,7 @@ const whenDeleteChecklistItem =
       HabiticaToolHandlers.pipe(
         Effect.provideService(HabiticaGateway, fakeGateway),
         Effect.flatMap((handlers) =>
-          handlers.DeleteChecklistItemTool({
+          handlers.habitica_delete_checklist_item({
             itemId: capturedChecklistItemId,
             taskId: capturedTaskId,
           }),
@@ -308,7 +311,7 @@ const whenDeleteChecklistItem =
 const whenReadInventory = Bdd.when`I read inventory`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.GetInventoryTool()),
+    Effect.flatMap((handlers) => handlers.habitica_get_inventory()),
     Effect.map((inventory) => ({ message: Object.keys(inventory.pets)[0] ?? "", taskText: "" })),
   ),
 );
@@ -316,7 +319,7 @@ const whenReadInventory = Bdd.when`I read inventory`(() =>
 const whenListNotifications = Bdd.when`I list notifications`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.ListNotificationsTool()),
+    Effect.flatMap((handlers) => handlers.habitica_list_notifications()),
     Effect.map(({ notifications }) => ({ message: notifications[0]?.text ?? "", taskText: "" })),
   ),
 );
@@ -326,7 +329,7 @@ const whenReadNotification = Bdd.when`I read notification ${notificationIdCaptur
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.ReadNotificationTool({ notificationId: capturedNotificationId }),
+        handlers.habitica_read_notification({ notificationId: capturedNotificationId }),
       ),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
@@ -335,7 +338,7 @@ const whenReadNotification = Bdd.when`I read notification ${notificationIdCaptur
 const whenListRewards = Bdd.when`I list rewards`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.ListRewardsTool()),
+    Effect.flatMap((handlers) => handlers.habitica_list_rewards()),
     Effect.map(({ tasks }) => ({ message: "", taskText: tasks[0]?.text ?? "" })),
   ),
 );
@@ -345,7 +348,7 @@ const whenCreateReward = Bdd.when`I create reward ${rewardNameCapture}`(
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.CreateRewardTool({ text: capturedRewardName, type: "reward" }),
+        handlers.habitica_create_reward({ text: capturedRewardName, type: "reward" }),
       ),
       Effect.map((task) => ({ message: "", taskText: task.text })),
     ),
@@ -362,7 +365,7 @@ const whenUpdateReward = Bdd.when`I update reward ${rewardIdCapture} to ${reward
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.UpdateRewardTool({ id: capturedRewardId, text: capturedRewardName }),
+        handlers.habitica_update_reward({ id: capturedRewardId, text: capturedRewardName }),
       ),
       Effect.map((task) => ({ message: "", taskText: task.text })),
     ),
@@ -372,7 +375,7 @@ const whenBuyReward = Bdd.when`I buy reward ${rewardIdCapture}`(
   ({ rewardId: capturedRewardId }: { readonly rewardId: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.BuyRewardTool({ rewardId: capturedRewardId })),
+      Effect.flatMap((handlers) => handlers.habitica_buy_reward({ rewardId: capturedRewardId })),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
 );
@@ -381,7 +384,7 @@ const whenDeleteReward = Bdd.when`I delete reward ${rewardIdCapture}`(
   ({ rewardId: capturedRewardId }: { readonly rewardId: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.DeleteRewardTool({ rewardId: capturedRewardId })),
+      Effect.flatMap((handlers) => handlers.habitica_delete_reward({ rewardId: capturedRewardId })),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
 );
@@ -389,7 +392,7 @@ const whenDeleteReward = Bdd.when`I delete reward ${rewardIdCapture}`(
 const whenListShopItems = Bdd.when`I list shop items`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.ListShopItemsTool()),
+    Effect.flatMap((handlers) => handlers.habitica_list_shop_items()),
     Effect.map(({ shopItems }) => ({ message: shopItems[0]?.text ?? "", taskText: "" })),
   ),
 );
@@ -398,7 +401,7 @@ const whenBuyShopItem = Bdd.when`I buy shop item ${shopItemKeyCapture}`(
   ({ shopItemKey: capturedShopItemKey }: { readonly shopItemKey: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.BuyShopItemTool({ key: capturedShopItemKey })),
+      Effect.flatMap((handlers) => handlers.habitica_buy_shop_item({ key: capturedShopItemKey })),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
 );
@@ -414,7 +417,7 @@ const whenHatchPet = Bdd.when`I hatch pet ${eggKeyCapture} ${hatchingPotionKeyCa
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.HatchPetTool({
+        handlers.habitica_hatch_pet({
           eggKey: capturedEggKey,
           hatchingPotionKey: capturedHatchingPotionKey,
         }),
@@ -434,7 +437,7 @@ const whenFeedPet = Bdd.when`I feed pet ${petKeyCapture} ${foodKeyCapture}`(
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.FeedPetTool({ foodKey: capturedFoodKey, petKey: capturedPetKey }),
+        handlers.habitica_feed_pet({ foodKey: capturedFoodKey, petKey: capturedPetKey }),
       ),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
@@ -444,7 +447,7 @@ const whenEquipPet = Bdd.when`I equip pet ${petKeyCapture}`(
   ({ petKey: capturedPetKey }: { readonly petKey: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.EquipPetTool({ petKey: capturedPetKey })),
+      Effect.flatMap((handlers) => handlers.habitica_equip_pet({ petKey: capturedPetKey })),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
 );
@@ -453,7 +456,7 @@ const whenEquipMount = Bdd.when`I equip mount ${mountKeyCapture}`(
   ({ mountKey: capturedMountKey }: { readonly mountKey: string }) =>
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
-      Effect.flatMap((handlers) => handlers.EquipMountTool({ mountKey: capturedMountKey })),
+      Effect.flatMap((handlers) => handlers.habitica_equip_mount({ mountKey: capturedMountKey })),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
 );
@@ -461,7 +464,7 @@ const whenEquipMount = Bdd.when`I equip mount ${mountKeyCapture}`(
 const whenListSkills = Bdd.when`I list skills`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.ListSkillsTool()),
+    Effect.flatMap((handlers) => handlers.habitica_list_skills()),
     Effect.map(({ skills }) => ({ message: skills[0]?.text ?? "", taskText: "" })),
   ),
 );
@@ -477,7 +480,7 @@ const whenCastSkill = Bdd.when`I cast skill ${skillKeyCapture} at ${taskIdCaptur
     HabiticaToolHandlers.pipe(
       Effect.provideService(HabiticaGateway, fakeGateway),
       Effect.flatMap((handlers) =>
-        handlers.CastSkillTool({ skillKey: capturedSkillKey, targetId: capturedTaskId }),
+        handlers.habitica_cast_skill({ skillKey: capturedSkillKey, targetId: capturedTaskId }),
       ),
       Effect.map((result) => ({ message: result.message, taskText: "" })),
     ),
