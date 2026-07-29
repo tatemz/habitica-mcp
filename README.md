@@ -128,13 +128,13 @@ requests and in full on pushes to `main` and on a nightly schedule.
 
 ## Tool Surface
 
-`habitica_hello_world` returns a deterministic greeting and does not require
-Habitica credentials. Use it as the first MCP smoke test.
-
 Core tools cover profile, stats, tasks, tags, checklists, and notifications.
 Expanded tools cover rewards, inventory, shop items, pets, mounts, and skills.
 
-All 31 tool names are namespaced lower `snake_case`, so they stay
+Every tool talks to Habitica, so the credential-free connection check is reading
+the `habitica-mcp://capabilities` resource rather than calling a tool.
+
+All 30 tool names are namespaced lower `snake_case`, so they stay
 distinguishable when a client has several MCP servers connected. Every tool also
 carries a human-readable `title` for approval dialogs, a description, and a
 full set of MCP behaviour hints:

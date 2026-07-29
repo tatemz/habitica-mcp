@@ -109,14 +109,6 @@ const givenFakeGateway = Bdd.given`the fake Habitica gateway is available`(() =>
   Effect.succeed({ message: "", taskText: "" }),
 );
 
-const whenAskForHelloWorld = Bdd.when`I ask for hello world`(() =>
-  HabiticaToolHandlers.pipe(
-    Effect.provideService(HabiticaGateway, fakeGateway),
-    Effect.flatMap((handlers) => handlers.habitica_hello_world({})),
-    Effect.map((greeting) => ({ message: greeting, taskText: "" })),
-  ),
-);
-
 const whenListTodoTasks = Bdd.when`I list todo tasks`(() =>
   HabiticaToolHandlers.pipe(
     Effect.provideService(HabiticaGateway, fakeGateway),
@@ -507,13 +499,6 @@ const thenMutationMessage = Bdd.then`the mutation message is ${expectedCapture}`
       : Effect.fail(`expected message ${expectedMessage}` as const),
 );
 
-const thenMcpGreeting = Bdd.then`the MCP greeting is ${expectedCapture}`(
-  ({ expected: expectedMessage }: { readonly expected: string }, state: ScenarioState) =>
-    state.message === expectedMessage
-      ? Effect.succeed(state)
-      : Effect.fail(`expected greeting ${expectedMessage}` as const),
-);
-
 const thenResultText = Bdd.then`the result text is ${expectedCapture}`(
   ({ expected: expectedMessage }: { readonly expected: string }, state: ScenarioState) =>
     state.message === expectedMessage
@@ -521,11 +506,6 @@ const thenResultText = Bdd.then`the result text is ${expectedCapture}`(
       : Effect.fail(`expected result ${expectedMessage}` as const),
 );
 
-const sayHello = Bdd.scenario("Saying hello without Habitica credentials").pipe(
-  givenFakeGateway,
-  whenAskForHelloWorld,
-  thenMcpGreeting,
-);
 const listTodos = Bdd.scenario("Listing todo tasks").pipe(
   givenFakeGateway,
   whenListTodoTasks,
@@ -633,7 +613,6 @@ const castSkills = Bdd.scenario("Casting skills").pipe(
 );
 
 export const habiticaCore = Bdd.feature("Habitica core tools").pipe(
-  sayHello,
   listTodos,
   readProfileAndStats,
   readTask,

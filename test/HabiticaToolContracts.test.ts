@@ -143,13 +143,6 @@ const contracts: Readonly<Record<string, ToolContract>> = {
     parameters: ["eggKey", "hatchingPotionKey"],
     readonly: false,
   },
-  habitica_hello_world: {
-    destructive: false,
-    idempotent: true,
-    openWorld: false,
-    parameters: ["name"],
-    readonly: true,
-  },
   habitica_list_notifications: {
     destructive: false,
     idempotent: true,

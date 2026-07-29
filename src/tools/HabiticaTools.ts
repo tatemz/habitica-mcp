@@ -83,15 +83,10 @@ const ShopItemInput = Schema.Struct({
     description: "Shop item key, as returned by the shop item list tool.",
   }),
 });
-const HelloWorldInput = Schema.Struct({
-  name: Schema.optional(
-    Schema.String.annotate({ description: 'Name to greet. Defaults to "world".' }),
-  ),
-});
 const HabiticaFailure = { failure: HabiticaErrorSchema } as const;
 
 /**
- * MCP surfaces four behaviour hints per tool. Building them as contexts keeps 31
+ * MCP surfaces four behaviour hints per tool. Building them as contexts keeps 30
  * tools from repeating the same four-call annotate chain, and makes the
  * idempotency claim per category explicit rather than accidental.
  */
@@ -140,13 +135,6 @@ const deleteHints = hints({
   readOnly: false,
 });
 
-/** The smoke test touches no external system. */
-const localHints = hints({
-  destructive: false,
-  idempotent: true,
-  openWorld: false,
-  readOnly: true,
-});
 const HabiticaTasksOutput = Schema.Struct({ tasks: Schema.Array(HabiticaTask) });
 const HabiticaTagsOutput = Schema.Struct({ tags: Schema.Array(HabiticaTag) });
 const HabiticaNotificationsOutput = Schema.Struct({
@@ -154,15 +142,6 @@ const HabiticaNotificationsOutput = Schema.Struct({
 });
 const HabiticaShopItemsOutput = Schema.Struct({ shopItems: Schema.Array(HabiticaShopItem) });
 const HabiticaSkillsOutput = Schema.Struct({ skills: Schema.Array(HabiticaSkill) });
-
-const HelloWorldTool = Tool.make("habitica_hello_world", {
-  description:
-    "Return a deterministic greeting. Use this to verify the MCP connection without Habitica credentials.",
-  parameters: HelloWorldInput,
-  success: Schema.String,
-})
-  .annotateMerge(localHints)
-  .annotate(Tool.Title, "Hello World");
 
 const GetUserProfileTool = Tool.make("habitica_get_user_profile", {
   ...HabiticaFailure,
@@ -453,7 +432,6 @@ const CastSkillTool = Tool.make("habitica_cast_skill", {
 
 /** @internal */
 export const HabiticaToolkit = Toolkit.make(
-  HelloWorldTool,
   GetUserProfileTool,
   GetStatsTool,
   ListTasksTool,
@@ -509,7 +487,6 @@ export const HabiticaToolHandlers = Effect.gen(function* () {
     habitica_get_task: gateway.getTask,
     habitica_get_user_profile: () => gateway.getUserProfile,
     habitica_hatch_pet: gateway.hatchPet,
-    habitica_hello_world: ({ name }) => Effect.succeed(`Hello, ${name ?? "world"}!`),
     habitica_list_notifications: () =>
       gateway.listNotifications.pipe(Effect.map((notifications) => ({ notifications }))),
     habitica_list_rewards: () =>

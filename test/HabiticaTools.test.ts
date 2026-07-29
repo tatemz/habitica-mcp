@@ -142,7 +142,6 @@ const invocations: ReadonlyArray<
     () => handlers.habitica_hatch_pet({ eggKey: "Wolf", hatchingPotionKey: "Base" }),
     mutation,
   ],
-  ["habitica_hello_world", () => handlers.habitica_hello_world({}), "Hello, world!"],
   [
     "habitica_list_notifications",
     () => handlers.habitica_list_notifications(),
@@ -242,7 +241,6 @@ describe("HabiticaToolkit", () => {
       "habitica_get_stats",
       "habitica_get_task",
       "habitica_get_user_profile",
-      "habitica_hello_world",
       "habitica_list_notifications",
       "habitica_list_rewards",
       "habitica_list_shop_items",
@@ -260,12 +258,6 @@ describe("HabiticaToolHandlers", () => {
       await expect(Effect.runPromise(invoke())).resolves.toEqual(expected);
     },
   );
-
-  it("greets the supplied name", async () => {
-    await expect(
-      Effect.runPromise(handlers.habitica_hello_world({ name: "Tatemz" })),
-    ).resolves.toBe("Hello, Tatemz!");
-  });
 
   it("passes the requested task type through to the gateway", async () => {
     await expect(

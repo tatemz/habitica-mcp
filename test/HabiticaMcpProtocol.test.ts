@@ -154,15 +154,6 @@ describe("tools/call", () => {
     });
   });
 
-  it("greets without touching Habitica, so the smoke test needs no credentials", async () => {
-    const result = await resultOf("tools/call", {
-      name: "habitica_hello_world",
-      arguments: { name: "Tatemz" },
-    });
-
-    expect(result["content"]).toEqual([{ type: "text", text: '"Hello, Tatemz!"' }]);
-  });
-
   it("reports a missing required argument as a tool error, not a transport crash", async () => {
     const result = await resultOf("tools/call", {
       name: "habitica_get_task",

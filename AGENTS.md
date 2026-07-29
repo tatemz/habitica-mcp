@@ -63,8 +63,10 @@ MCP tools are an API. Treat schemas and response shapes as contracts.
   the model's only guidance when picking arguments.
 - Every tool has a narrow schema, explicit success type, and deterministic
   text/JSON output.
-- `habitica_hello_world` is the credential-free smoke test. Keep it boring and
-  deterministic.
+- Every tool is a Habitica capability. Do not add demo or greeting tools: the
+  tool list is context every client pays for on every session, and reading
+  `habitica-mcp://capabilities` already proves the connection without
+  credentials.
 - Do not print to stdout. Stdio MCP owns stdout; logs go to stderr.
 - Never expose Habitica credentials, auth headers, raw tokens, or full account
   dumps.
